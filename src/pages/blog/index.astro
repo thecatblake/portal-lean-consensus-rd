@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { articles } from "../../lib/content";
+const list = articles();
+---
+<Layout title="Blog | Lean Consensus R&D">
+  <h1>Blog</h1>
+  {list.length === 0 && <p>まだ記事はありません。</p>}
+  <ul class="list">
+    {list.map((a) => (
+      <li>
+        <a href={a.path}>{a.title}</a>
+        {a.datePublished && <div class="meta">{a.datePublished}</div>}
+        {a.description && <div>{a.description}</div>}
+      </li>
+    ))}
+  </ul>
+</Layout>

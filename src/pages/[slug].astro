@@ -1,0 +1,13 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { pages } from "../lib/content";
+
+export function getStaticPaths() {
+  return pages().map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+const { page } = Astro.props;
+---
+<Layout title={`${page.title} | Lean Consensus R&D`} description={page.description || undefined} jsonLd={{ "@context": "https://schema.org", "@type": "WebPage", name: page.title, description: page.description || undefined }}>
+  <h1>{page.title}</h1>
+  <article set:html={page.html} />
+</Layout>
