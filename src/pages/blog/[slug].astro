@@ -1,0 +1,19 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { articles } from "../../lib/content";
+
+export function getStaticPaths() {
+  return articles().map((article) => ({ params: { slug: article.slug }, props: { article } }));
+}
+const { article } = Astro.props;
+---
+<Layout
+  title={`${article.title} | Lean Consensus R&D`}
+  description={article.description || undefined}
+  jsonLd={{ "@context": "https://schema.org", "@type": "BlogPosting", headline: article.title, description: article.description || undefined, datePublished: article.datePublished, dateModified: article.dateModified, keywords: article.keywords.length ? article.keywords : undefined }}
+>
+  <h1>{article.title}</h1>
+  <p class="meta">{article.datePublished}{article.keywords.length ? ` · ${article.keywords.join(", ")}` : ""}</p>
+  <article set:html={article.html} />
+  <p><a href="/blog/">← Blog</a></p>
+</Layout>

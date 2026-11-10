@@ -1,25 +1,16 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import { articles, pages } from "../lib/content";
+const latest = articles().slice(0, 5);
+const others = pages();
 ---
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lean Consensus R&amp;D</title>
-    <!-- Google tag (GA4) -->
-    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-X9KKSN4QMC"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-X9KKSN4QMC');
-    </script>
-    <!-- Portal 計測(Cookieなし。表示回数と予約/電話/地図のクリックのみ) -->
-    <script is:inline defer src="https://portal.kryor.studio/t/s.js" data-site="1406267e-eff3-4190-b9c7-1d2c119b414d"></script>
-  </head>
-  <body>
-    <main>
-      <h1>Lean Consensus R&amp;D</h1>
-    </main>
-  </body>
-</html>
+<Layout title="Lean Consensus R&D">
+  <h1>Lean Consensus R&amp;D</h1>
+  {others.length > 0 && <ul>{others.map((p) => <li><a href={p.path}>{p.title}</a></li>)}</ul>}
+  {latest.length > 0 && (
+    <>
+      <h2>Blog</h2>
+      <ul class="list">{latest.map((a) => <li><a href={a.path}>{a.title}</a> <span class="meta">{a.datePublished}</span></li>)}</ul>
+    </>
+  )}
+</Layout>
