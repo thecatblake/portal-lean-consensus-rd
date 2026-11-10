@@ -1,19 +1,32 @@
 ---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
 interface Props {
-  title: string;
+  title?: string;
   description?: string;
-  path?: string;
   jsonLd?: object;
 }
-const { title, description, jsonLd } = Astro.props;
+
+const siteName = "Lean Consensus R&D";
+const { title, description = "Research and development notes on Lean Consensus, the next-generation Ethereum consensus layer.", jsonLd } = Astro.props;
+const fullTitle = title ? `${title} · ${siteName}` : siteName;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---
+
 <!doctype html>
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
+    <meta name="color-scheme" content="light dark" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {canonical && <link rel="canonical" href={canonical} />}
     {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, "\\u003c")} />}
     <!-- Google tag (GA4) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-X9KKSN4QMC"></script>
@@ -23,21 +36,14 @@ const { title, description, jsonLd } = Astro.props;
       gtag('js', new Date());
       gtag('config', 'G-X9KKSN4QMC');
     </script>
-    <!-- Portal 計測(Cookieなし。表示回数と予約/電話/地図のクリックのみ) -->
+    <!-- Portal analytics (cookieless: page views and booking/phone/map clicks only) -->
     <script is:inline defer src="https://portal.kryor.studio/t/s.js" data-site="1406267e-eff3-4190-b9c7-1d2c119b414d"></script>
-    <style>
-      body { font: 16px/1.8 system-ui, -apple-system, "Hiragino Sans", sans-serif; margin: 0; color: #1a1a1a; }
-      header, main, footer { max-width: 44rem; margin: 0 auto; padding: 1rem 1.25rem; }
-      header a { margin-right: 1rem; }
-      a { color: #0b57d0; }
-      img { max-width: 100%; height: auto; }
-      .meta { color: #666; font-size: .875rem; }
-      ul.list { list-style: none; padding: 0; }
-      ul.list li { margin: 1.25rem 0; }
-    </style>
   </head>
   <body>
-    <header><a href="/">Lean Consensus R&amp;D</a><a href="/blog/">Blog</a></header>
-    <main><slot /></main>
+    <Header current={Astro.url.pathname} />
+    <main>
+      <slot />
+    </main>
+    <Footer />
   </body>
 </html>

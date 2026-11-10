@@ -1,0 +1,25 @@
+---
+import { pages } from "../lib/content";
+interface Props {
+  current: string;
+}
+const { current } = Astro.props;
+// The pages published in Portal, plus the blog once there is an article.
+const links = [...pages().map((p) => ({ href: p.path, label: p.title })), { href: "/blog/", label: "Blog" }];
+const isActive = (href: string) => current.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href="/">Lean Consensus <span>R&amp;D</span></a>
+    <nav aria-label="Primary">
+      <ul>
+        {links.map((l) => (
+          <li>
+            <a href={l.href} aria-current={isActive(l.href) ? "page" : undefined}>{l.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>

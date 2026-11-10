@@ -2,15 +2,38 @@
 import Layout from "../layouts/Layout.astro";
 import { articles, pages } from "../lib/content";
 const latest = articles().slice(0, 5);
-const others = pages();
+const list = pages();
 ---
-<Layout title="Lean Consensus R&D">
-  <h1>Lean Consensus R&amp;D</h1>
-  {others.length > 0 && <ul>{others.map((p) => <li><a href={p.path}>{p.title}</a></li>)}</ul>}
-  {latest.length > 0 && (
-    <>
-      <h2>Blog</h2>
-      <ul class="list">{latest.map((a) => <li><a href={a.path}>{a.title}</a> <span class="meta">{a.datePublished}</span></li>)}</ul>
-    </>
-  )}
+
+<Layout>
+  <div class="container">
+    <h1>Lean Consensus R&amp;D</h1>
+    <p class="lede">Research and development notes on Lean Consensus, the next-generation Ethereum consensus layer.</p>
+
+    {list.length > 0 && (
+      <div class="cards">
+        {list.map((p) => (
+          <a class="card" href={p.path}>
+            <h3>{p.title}</h3>
+            {p.description && <p>{p.description}</p>}
+          </a>
+        ))}
+      </div>
+    )}
+
+    {latest.length > 0 && (
+      <>
+        <h2>Latest</h2>
+        <ul class="post-list">
+          {latest.map((a) => (
+            <li>
+              <a href={a.path}>{a.title}</a>
+              <div class="meta">{a.datePublished}</div>
+              {a.description && <p>{a.description}</p>}
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+  </div>
 </Layout>

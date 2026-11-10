@@ -3,16 +3,19 @@ import Layout from "../../layouts/Layout.astro";
 import { articles } from "../../lib/content";
 const list = articles();
 ---
-<Layout title="Blog | Lean Consensus R&D">
-  <h1>Blog</h1>
-  {list.length === 0 && <p>まだ記事はありません。</p>}
-  <ul class="list">
-    {list.map((a) => (
-      <li>
-        <a href={a.path}>{a.title}</a>
-        {a.datePublished && <div class="meta">{a.datePublished}</div>}
-        {a.description && <div>{a.description}</div>}
-      </li>
-    ))}
-  </ul>
+
+<Layout title="Blog">
+  <div class="container">
+    <h1>Blog</h1>
+    {list.length === 0 && <p class="lede">No articles yet.</p>}
+    <ul class="post-list">
+      {list.map((a) => (
+        <li>
+          <a href={a.path}>{a.title}</a>
+          <div class="meta">{a.datePublished}</div>
+          {a.description && <p>{a.description}</p>}
+        </li>
+      ))}
+    </ul>
+  </div>
 </Layout>
