@@ -36,6 +36,7 @@ export interface Item {
   datePublished?: string;
   dateModified?: string;
   keywords: string[];
+  author?: string;
   path: string;
 }
 
@@ -54,6 +55,7 @@ function items(kind: "page" | "article"): Item[] {
       datePublished: article ? str(v.datePublished) || undefined : undefined,
       dateModified: article ? str(v.dateModified) || undefined : undefined,
       keywords: Array.isArray(v.keywords) ? v.keywords.map(str).filter(Boolean) : [],
+      author: article ? str(v.author) || undefined : undefined,
       path: article ? `/blog/${slug}/` : `/${slug}/`,
     });
   }
