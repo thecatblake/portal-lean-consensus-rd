@@ -6,6 +6,10 @@ Primary readers are consensus client implementers and protocol researchers. Some
 
 Requirements and decisions: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md).
 
+## Related sites
+
+- [leanroadmap.org](https://leanroadmap.org/) is a different website: a progress dashboard for Lean Consensus R&D. This site is separate from it and is not affiliated with it.
+
 ## Publishing
 
 1. Write or edit a page or article in Portal and publish it.
