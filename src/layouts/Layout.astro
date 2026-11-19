@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
 
 interface Props {
   title?: string;
@@ -21,6 +20,13 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <!-- Apply the reader's saved theme before the first paint, so there is no flash. -->
+    <script is:inline>
+      try {
+        const t = localStorage.getItem("theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={fullTitle} />
@@ -44,6 +50,5 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <main>
       <slot />
     </main>
-    <Footer />
   </body>
 </html>

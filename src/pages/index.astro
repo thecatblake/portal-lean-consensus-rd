@@ -1,39 +1,145 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { articles, pages } from "../lib/content";
-const latest = articles().slice(0, 5);
-const list = pages();
+import { articles } from "../lib/content";
+import { benchmarks, calls, clients, community, currentDevnet, events, pastDevnets, specs, tooling } from "../data/tracker";
+
+const FEED_LIMIT = 10;
+const feed = [
+  ...events.map((e) => ({ ...e, author: undefined as string | undefined })),
+  ...articles()
+    .filter((a) => a.datePublished)
+    .map((a) => ({ date: a.datePublished!, type: "Post", title: a.title, url: a.path, author: a.author })),
+]
+  .sort((a, b) => b.date.localeCompare(a.date))
+  .slice(0, FEED_LIMIT);
+
+const dash = "—";
+const val = (v: string | null | undefined) => v ?? dash;
 ---
 
-<Layout>
+<Layout description="Tracking the progress of Lean Consensus R&D for working researchers.">
   <div class="container">
-    <h1>Lean Consensus R&amp;D</h1>
-    <p class="lede">Research and development notes on Lean Consensus, the next-generation Ethereum consensus layer.</p>
-
-    {list.length > 0 && (
-      <div class="cards">
-        {list.map((p) => (
-          <a class="card" href={p.path}>
-            <h3>{p.title}</h3>
-            {p.description && <p>{p.description}</p>}
-          </a>
+    <h2>What changed</h2>
+    {feed.length === 0 ? (
+      <p class="meta">Nothing yet.</p>
+    ) : (
+      <ul class="feed">
+        {feed.map((e) => (
+          <li>
+            <span class="meta">{e.date}</span>
+            <span class="meta">{e.type}</span>
+            <a href={e.url}>{e.title}</a>
+            {e.author && <span class="meta">{e.author}</span>}
+          </li>
         ))}
-      </div>
+      </ul>
     )}
 
-    {latest.length > 0 && (
+    <h2>Benchmarks</h2>
+    {benchmarks.map((g) => (
       <>
-        <h2>Latest</h2>
-        <ul class="post-list">
-          {latest.map((a) => (
-            <li>
-              <a href={a.path}>{a.title}</a>
-              <div class="meta">{a.datePublished}</div>
-              {a.description && <p>{a.description}</p>}
-            </li>
-          ))}
-        </ul>
+        <h3>{g.name}</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Metric</th><th>Measured</th><th>Target</th><th>Measured on</th><th>Source</th></tr>
+            </thead>
+            <tbody>
+              {g.metrics.map(({ metric, m }) => (
+                <tr>
+                  <th scope="row">{metric}</th>
+                  <td>{m.value ?? "Not measured yet"}</td>
+                  <td>{val(m.target)}</td>
+                  <td>{[m.hardware, m.branch, m.measuredOn].filter(Boolean).join(" · ") || dash}</td>
+                  <td>{m.source ? <a href={m.source}>{m.sourceLabel ?? "Source"}</a> : dash}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {g.note && <p class="meta">{g.note}</p>}
       </>
+    ))}
+
+    <h2>Specifications</h2>
+    <div class="cards">
+      {specs.map((s) => (
+        <div class="card">
+          <h3>{s.name}</h3>
+          <p>Latest: {val(s.version)}</p>
+          <p>Last changed: {val(s.changedOn)}</p>
+          <p>
+            {s.repo ? <a href={s.repo}>Repository</a> : <span>Repository {dash}</span>}
+            {" · "}
+            {s.changelog ? <a href={s.changelog}>Changelog</a> : <span>Changelog {dash}</span>}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <h2>Implementations</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Client</th><th>Language</th><th>Team</th><th>Devnet passed</th><th>Spec</th><th>Last activity</th><th>Repo</th><th>Links</th></tr>
+        </thead>
+        <tbody>
+          {clients.map((c) => (
+            <tr>
+              <th scope="row">{c.name}</th>
+              <td>{val(c.language)}</td>
+              <td>{val(c.team)}</td>
+              <td>{val(c.devnetPassed)}</td>
+              <td>{val(c.specVersion)}</td>
+              <td>{val(c.lastActivity)}</td>
+              <td>{c.repo ? <a href={c.repo}>Repo</a> : dash}</td>
+              <td>{c.accounts.length ? c.accounts.map((a, i) => <>{i > 0 && " · "}<a href={a.url}>{a.label}</a></>) : dash}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Devnets</h2>
+    {currentDevnet ? (
+      <div class="card">
+        <h3>{currentDevnet.name}</h3>
+        <p>Goals: {val(currentDevnet.goals)}</p>
+        <p>Status: {val(currentDevnet.status)}</p>
+        <p>Clients: {currentDevnet.clients.length ? currentDevnet.clients.join(", ") : dash}</p>
+      </div>
+    ) : (
+      <p class="meta">No devnet data yet.</p>
     )}
+    {pastDevnets.length > 0 && (
+      <ul class="feed">
+        {pastDevnets.map((d) => (
+          <li>
+            <span class="meta">{d.name}</span>
+            <span>{val(d.status)}</span>
+            {d.spec && <a href={d.spec}>Spec</a>}
+            {d.retrospective && <a href={d.retrospective}>Retrospective</a>}
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <h2>Tooling and community</h2>
+    <ul class="feed">
+      {tooling.map((t) => (
+        <li><span class="meta">Tooling</span>{t.url ? <a href={t.url}>{t.name}</a> : <span>{t.name}</span>}</li>
+      ))}
+      {calls.map((c) => (
+        <li>
+          <span class="meta">Calls</span>
+          <span>{c.name}</span>
+          {c.agenda && <a href={c.agenda}>Agenda</a>}
+          {c.recordings && <a href={c.recordings}>Recordings</a>}
+        </li>
+      ))}
+      {community.map((c) => (
+        <li><span class="meta">Community</span>{c.url ? <a href={c.url}>{c.name}</a> : <span>{c.name}</span>}</li>
+      ))}
+    </ul>
   </div>
 </Layout>

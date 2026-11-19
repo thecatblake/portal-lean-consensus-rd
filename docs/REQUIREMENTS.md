@@ -16,14 +16,44 @@ Status: Draft. "Decided" items are decisions or facts confirmed from the code. "
 - Navigation and the home page are generated from the pages published in Portal.
 - Body text is Markdown. Raw HTML is rejected.
 - Analytics: Portal tracking script (GA4).
-- Purpose: a public research log. Research notes and findings on Lean Consensus are published as they happen, for anyone interested.
+- Purpose: track the progress of Lean Consensus R&D for working researchers. Base: leanroadmap.org, whose own stamp reads "Last updated: May 2026" (checked 2026-11-18). This replaces the earlier "public research log" purpose; see the conflicts listed in section 2.
 
 - Primary audience: consensus client implementers and protocol researchers. Research posts assume deep prior knowledge and can skip the basics.
 - Secondary audience: the broader Ethereum community. Some content will be written for them (for example explainers), and should be marked as such so readers know the level.
 
-- Top page: the site title and a one-line description of the log, then the latest articles first. Each entry shows its type (Research or Explainer), date and author. Links to About and Sources live in the header navigation, not as cards on the top page.
+- Top page: six sections, in this order. This supersedes the earlier "title, description, latest articles" top page.
+  1. **What changed.** A dated feed, newest first. Each entry is one line with a link: spec PRs, posts, devnet events, benchmark changes, talks. (The one-line layout decided earlier, date, type, title, link, fits this feed.)
+  2. **Benchmarks.**
+     - leanXMSS: public key size, signature size, keygen time, signing time and verification time, each against its target.
+     - leanMultisig: XMSS aggregated per second and aggregate size, each against its target.
+     - Each number shows its hardware, branch and measurement date, and links to its source run (leanBench or the repo README).
+     - Numbers are rendered in the HTML itself, not loaded by JavaScript.
+     - Optional: a small trend chart over time.
+  3. **Specifications.** One card each for leanSpec, leanXMSS, leanMultisig and leanMetrics. Each card shows the latest version or commit, the date it last changed, and links to the repo and changelog.
+  4. **Implementations.** One row per Lean Consensus client currently running: Lantern, Lighthouse, ethlambda, gean, Verity. Columns: language, team, latest devnet passed, spec version targeted, last release or commit date, repo link. Optional: a table of which features each client supports (leanXMSS, leanMultisig, aggregator role, and so on).
+  5. **Devnets.** The current devnet on top: goals, status, participating clients. Below it a compact timeline of past devnets (pq-devnet-0 onward) with links to specs and retrospectives.
+  6. **Tooling and community.** Tooling: Hive, leanBench, PQ Observatory. Calls: the PQ Interop breakout meetings and Lean Calls, with recordings and agendas. Community: the Eth R&D Discord (#post-quantum).
+- About page: what Lean Consensus is, plus the Key Ideas (Lean Consensus, Lean Cryptography, Lean Governance, Lean Craft). Who maintains the site and how to send corrections.
+
+- Design system: minimal and lean, with as little redundancy as possible in colors and spacing while keeping the UX intact.
+  - Colors: white and black only. Muted text, lines and tints are mixes of the two. Dark mode swaps the two.
+  - One accent token (`--accent`) for links, the brand mark and the active nav item. It is still black; the highlight color is chosen later by changing that one value.
+  - Spacing: four steps (0.5, 1, 2, 4 rem). No values outside the scale.
+  - No radius, shadows or filled boxes. Structure comes from spacing and thin lines.
+  - Tokens live in `src/styles/global.css`.
 
 ## 2. Open
+
+### Conflicts with earlier decisions (the new top page spec changes the site from a log to a tracker)
+- [ ] Is the blog still part of the site? Earlier decisions assume articles: Research and Explainer types, guest authors, bylines, Sources page, publish-when-there-is-a-finding. "What changed" already lists posts, so the blog may stay as the source of those posts, or go.
+- [ ] The Sources page overlaps with section 6 (Tooling and community). Keep it, merge it into the top page, or drop it.
+- [ ] The audience line says implementers and researchers first, with some content for the broader community. "Working researchers" is narrower. Confirm.
+
+### Data (new, and the main technical question)
+- [ ] Where each section's data comes from, and who keeps it current: GitHub (commits, releases, PRs), leanBench runs, repo READMEs, call recordings, devnet notes. Portal pages hold text, not structured data like this.
+- [ ] How often the site rebuilds. The numbers are in the HTML, so a rebuild is the only way they refresh.
+- [ ] Targets for each benchmark: where the "target" values come from.
+- [ ] Missing data: what a card or row shows when a value is unknown. The rule that numbers are measured, never estimated, means it must say so and not show a zero.
 
 ### Purpose
 - [x] Success measure: readership from the target audience, using measured readers and returning visitors from GA4 through the Portal tracking script. Only measured numbers are reported, never estimates.
@@ -45,6 +75,10 @@ Status: Draft. "Decided" items are decisions or facts confirmed from the code. "
 - Level label fits the existing model: `keywords` is the only tag mechanism, so Research and Explainer can be reserved keywords with no Portal change.
 - [x] Sourcing rules: every factual claim about a spec, PR, commit or paper links to the exact primary source (spec version or commit, PR number, paper). Own opinions and speculation are labeled as such. Numbers must be measured, never estimated.
 - [ ] Whether the build should enforce any of this (for example warn when an article has no outbound links), or it stays an editorial rule.
+
+### Design
+- [ ] Highlight (accent) color.
+- [x] Theme: light and dark, with an icon toggle in the header (moon in light mode, sun in dark mode: the icon shows the theme a click switches to). With nothing saved it follows the system setting. A click saves the reader's choice in the browser (`localStorage`, key `theme`).
 
 ### Operations
 - [ ] Editing flow: deferred. The owner writes the first articles directly, so the flow is decided later. Guest submission is already decided (guests hand articles to the owner, who publishes).
